@@ -19,8 +19,8 @@ def main():
 players = [ User('Вася', 'Пупкин', 0), User('Петя', 'Тряпкин', 1), User('Даша', 'Корйека', 2) ]
 
 games = [
-    Game(1, 'haha'),
-    Game(2, 'hehe')
+    Game(0, 'haha'),
+    Game(1, 'hehe')
 ]
 
 games[0].connect(players[0])
@@ -37,6 +37,17 @@ def playesr():
         'count': len(buffer)
     }
 
+@app.route('/user/<id>')
+def user123(id):
+    id = int(id)
+    if id < 0 or id > len(players):
+        return "ОШИБКА!!!"
+    else:
+        return players[id].toJSON()
+    
+
+
+
 @app.route('/games')
 def games_lsdlfkjsldkfsldkfj():
     buffer = listToJSON(games)
@@ -45,7 +56,33 @@ def games_lsdlfkjsldkfsldkfj():
         'count': len(buffer)
     }
 
+@app.route('/game/<id>')
+def game123(id):
+    id = int(id)
+    if id < 0 or id > len(games):
+        return "ОШИБКА!!!"
+    else:
+        return games[id].toJSON()
+    
+@app.route("/create_game")
+def create_game():
+    buffer_name = request.args.get('name')
+    buffer_users = request.args.get('users')
+    moi_id = buffer_users.split(",")
+    ret = []
+    for str_id in moi_id:
+        ret.append(int(str_id))
+    users_in_game = [players[ret[0]], players[ret[1]]]
+    new_game = Game(len(games), buffer_name)
+    for gamer in users_in_game:
+        new_game.connect(gamer)
+    games.append(new_game)
+    return new_game.toJSON()
+
+
+
 cats_names = ['Вася', 'Мурзик', 'Жирунчик', 'Вапек']
+
 cats_info = {
     'Вася': 'дворняга', 
     'Мурзик': 'домашний', 
